@@ -21,6 +21,7 @@ export class TicketController {
 				res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
 			}
 			const crateNewTicket: Ticket = await this.ticketService.createNewTicket(title, description, status)
+			return res.status(HTTP_STATUS.CREATED_201).send(crateNewTicket)
 		} catch(e) {}
 	}
 
