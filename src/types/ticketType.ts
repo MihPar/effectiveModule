@@ -17,15 +17,26 @@ export class TicketDB {
 
 		async getNewTicket(): Promise<Ticket> {
 			return {
+				id: this._id,
 				createdAt: this.createdAt,
 				title: this.title,
 				description: this.description,
 				status: 'Новое',
 		}
 	}
+		static async getTicketById(getTickeById: TicketDB): Promise<Ticket> {
+			return {
+				id: getTickeById._id,
+				createdAt: getTickeById.createdAt,
+				title: getTickeById.title,
+				description: getTickeById.description,
+				status: getTickeById.status,
+			}
+		}
 }
 
 export class Ticket {
+	public id: ObjectId
 	public createdAt: string
 	constructor(
 		public title: string,
@@ -36,5 +47,6 @@ export class Ticket {
   		public cancellationReason?: string,
 	) {
 		this.createdAt = new Date().toISOString()
+		this.id = new ObjectId()
 	}
 }

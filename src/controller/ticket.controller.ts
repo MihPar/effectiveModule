@@ -1,13 +1,16 @@
 import { Response } from "express"
 import { BodyTicketModel } from "../model/bodyTicket.model"
-import { RequestTicketBody } from "../types/types"
+import { RequestTicketBody, RequestWithId } from "../types/types"
 import { HTTP_STATUS } from "../utils/utils.status"
 import { Ticket, TicketDB } from "../types/ticketType"
 import { TicketService } from "../servise/ticket.servise"
+import { TicketIdModel } from "../model/ticketId.model"
+import { QueryTicketRepository } from "../queryRepository/queryTicketRepository"
 
 export class TicketController {
 	constructor(
-		protected ticketService: TicketService
+		protected ticketService: TicketService,
+		protected queryTicketRepository: QueryTicketRepository
 	) {}
 
 	async getTickets() {
@@ -22,10 +25,19 @@ export class TicketController {
 			}
 			const crateNewTicket: Ticket = await this.ticketService.createNewTicket(title, description, status)
 			return res.status(HTTP_STATUS.CREATED_201).send(crateNewTicket)
-		} catch(e) {}
+		} catch(e) {
+			return res.status(HTTP_STATUS.NOT_WORK_SERVER_500)
+		}
 	}
 
-	async takeTicketInWork() {}
+	async takeTicketInWork(req: RequestWithId<TicketIdModel>, res: Response<Ticket>) {
+		try{
+			const {id} = req.body
+			const findTicketById = await this.queryTicketRepository.findTicketById(id)
+		} catch(e) {
+			return res.status(HTTP_STATUS.NOT_FOUND_404)
+		}
+	}
 
 	async completeTicket() {}
 
