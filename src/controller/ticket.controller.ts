@@ -1,6 +1,6 @@
 import { Response } from "express"
 import { BodyTicketModel } from "../model/bodyTicket.model"
-import { RequestTicketBody, RequestWithId } from "../types/types"
+import { RequesParamstWithId, RequestTicketBody, RequestWithId } from "../types/types"
 import { HTTP_STATUS } from "../utils/utils.status"
 import { Ticket, TicketDB } from "../types/ticketType"
 import { TicketService } from "../servise/ticket.servise"
@@ -29,16 +29,19 @@ export class TicketController {
 			return res.status(HTTP_STATUS.NOT_WORK_SERVER_500)
 		}
 	}
-
-	async takeTicketInWork(req: RequestWithId<TicketIdModel>, res: Response<Ticket>) {
+	
+  // Взять обращение в работу
+	async takeTicketInWork(req: RequesParamstWithId<TicketIdModel>, res: Response<Ticket | undefined>): Promise<Ticket | undefined> {
 		try{
-			const {id} = req.body
-			const findTicketById = await this.queryTicketRepository.findTicketById(id)
+			const {id, status, updatedAt} = req.body
+			const findTicketById: Ticket | undefined = await this.queryTicketRepository.findTicketById(id, status, updatedAt)
+			return res.status(HTTP_STATUS.OK_200).send(findTicketById)
 		} catch(e) {
-			return res.status(HTTP_STATUS.NOT_FOUND_404)
+			return res.sendStatus(HTTP_STATUS.NOT_FOUND_404)
 		}
 	}
 
+	// завершение обработки обращения
 	async completeTicket() {}
 
 	async cancelTicket() {}

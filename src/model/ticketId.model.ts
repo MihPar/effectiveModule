@@ -1,3 +1,5 @@
 export type TicketIdModel = {
-	id: string
+	id: string,
+	status: string,
+	updatedAt: string
 }
