@@ -12,3 +12,7 @@ export type TicketBodyModel = {
 export type TicketResolutionMessage = {
 	resolutionMessage: string
 }
+
+export type TicketCancellationReason = {
+	cancellationReason: string
+}

@@ -12,4 +12,14 @@ export class TicketService {
 		const createTicket: TicketDB = await this.ticketReposiotry.saveTicket(newTicket)
 		return createTicket.getNewTicket()
 	}
+
+	async updateTicket(id: string, resolutionMessage: string): Promise<TicketDB> {
+		const updateTicketById = await this.ticketReposiotry.updateTicket(id, resolutionMessage)
+		return updateTicketById
+	}
+
+	async updateTicketByCancellationReason(id: string, cancellationReason: string): Promise<TicketDB> {
+		const updateTicketById = await this.ticketReposiotry.updateTicketByCancell(id, cancellationReason)
+		return updateTicketById
+	}
 }

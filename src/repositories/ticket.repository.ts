@@ -8,7 +8,13 @@ export class TicketRepository {
 		return newTicket
 	}
 
-	async updateTicket(id: string, resolutionMessage: string) {
-		
+	async updateTicket(id: string, resolutionMessage: string): Promise<TicketDB> {
+		const updateTicket = await TicketModel.create({id, resolutionMessage, status: 'Завершено', updatedAt: new Date().toISOString()})
+		return updateTicket
+	}
+
+	async updateTicketByCancell(id: string, cancellationReason: string): Promise<TicketDB> {
+		const updateTicket = await TicketModel.create({id, cancellationReason, status: 'Отменено', updatedAt: new Date().toISOString()})
+		return updateTicket
 	}
 }

@@ -1,8 +1,8 @@
 import { Response } from "express"
-import { BodyTicketModel, TicketBodyModel, TicketResolutionMessage } from "../model/bodyTicket.model"
+import { BodyTicketModel, TicketBodyModel, TicketCancellationReason, TicketResolutionMessage } from "../model/bodyTicket.model"
 import { RequestTicketBody, RequestWithParamsAndBody } from "../types/types"
 import { HTTP_STATUS } from "../utils/utils.status"
-import { Ticket } from "../types/ticketType"
+import { Ticket, TicketDB } from "../types/ticketType"
 import { TicketService } from "../servise/ticket.servise"
 import { TicketIdModel } from "../model/ticketId.model"
 import { QueryTicketRepository } from "../queryRepository/queryTicketRepository"
@@ -43,18 +43,27 @@ export class TicketController {
 	}
 
 	// завершение обработки обращения
-	async completeTicket(req: RequestWithParamsAndBody<TicketIdModel, TicketResolutionMessage>, res: Response<Ticket | undefined>) {
+	async completeTicket(req: RequestWithParamsAndBody<TicketIdModel, TicketResolutionMessage>, res: Response<TicketDB | undefined>) {
 		const { id } = req.params;
     	const { resolutionMessage } = req.body;
 		const findTicketById = await this.queryTicketRepository.findTicketWithId(id)
 		if(!findTicketById) {
 			return res.sendStatus(HTTP_STATUS.NOT_FOUND_404)
-		} else {
-			const updateTicket = await this.
-		}
+		} 
+		const updateTicket = await this.ticketService.updateTicket(id, resolutionMessage)
+		return res.status(HTTP_STATUS.CREATED_201).send(updateTicket)
 	}
 
-	async cancelTicket() {}
+	async cancelTicket(req: RequestWithParamsAndBody<TicketIdModel, TicketCancellationReason>, res: Response<TicketDB | undefined>) {
+		const { id } = req.params;
+    	const { cancellationReason } = req.body;
+		const findTicketById = await this.queryTicketRepository.findTicketWithId(id)
+		if(!findTicketById) {
+			return res.sendStatus(HTTP_STATUS.NOT_FOUND_404)
+		} 
+		const updateReq = await this.ticketService.updateTicketByCancellationReason(id, cancellationReason)
+		return res.status(HTTP_STATUS.CREATED_201).send(updateReq)
+	}
 
 	async cancelAllInProgressTickets() {}
 }
