@@ -1,5 +1,5 @@
 import { TicketModel } from "../bd";
-import { Ticket, TicketDB } from "../types/ticketType";
+import { StatusType, Ticket, TicketDB } from "../types/ticketType";
 
 export class TicketRepository {
 
@@ -16,5 +16,13 @@ export class TicketRepository {
 	async updateTicketByCancell(id: string, cancellationReason: string): Promise<TicketDB> {
 		const updateTicket = await TicketModel.create({id, cancellationReason, status: 'Отменено', updatedAt: new Date().toISOString()})
 		return updateTicket
+	}
+
+	async updateTicketBy(status: StatusType): Promise<any> {
+		const update = await TicketModel.updateMany(
+			{ status: 'В работе' },
+      		{ status: 'Отменено', updatedAt: new Date() }
+		)
+		return update
 	}
 }

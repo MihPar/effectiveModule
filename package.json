@@ -10,6 +10,7 @@
     "config": "^3.3.12",
     "cookie-parser": "^1.4.7",
     "express": "^4.21.2",
+    "express-validator": "^7.2.1",
     "mongobd": "^0.0.1-security.0",
     "mongodb": "4.1",
     "mongoose": "^8.11.0",

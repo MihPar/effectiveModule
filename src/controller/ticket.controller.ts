@@ -26,12 +26,12 @@ export class TicketController {
 			const crateNewTicket: Ticket = await this.ticketService.createNewTicket(title, description, status)
 			return res.status(HTTP_STATUS.CREATED_201).send(crateNewTicket)
 		} catch(e) {
-			return res.status(HTTP_STATUS.NOT_WORK_SERVER_500)
+			return res.status(HTTP_STATUS.BAD_REQUEST_400)
 		}
 	}
 	
   // Взять обращение в работу
-	async takeTicketInWork(req: RequestWithParamsAndBody<TicketIdModel, TicketBodyModel>, res: Response<Ticket | undefined>): Promise<Ticket | undefined> {
+	async takeTicketInWork(req: RequestWithParamsAndBody<TicketIdModel, TicketBodyModel>, res: Response<Ticket | undefined>) {
 		try{
 			const { id } = req.params;
 			const {status, updatedAt} = req.body
@@ -65,5 +65,13 @@ export class TicketController {
 		return res.status(HTTP_STATUS.CREATED_201).send(updateReq)
 	}
 
-	async cancelAllInProgressTickets() {}
+	async cancelAllInProgressTickets(req: Request, res: Response) {
+		try {
+			const cancellAll = await this.ticketService.cancellAllTicket({status: 'Отменено'})
+			res.status(HTTP_STATUS.OK_200).send(cancellAll)
+		} catch(e) {
+			res.sendStatus(HTTP_STATUS.BAD_REQUEST_400)
+		}
+		
+	}
 }

@@ -50,3 +50,7 @@ export class Ticket {
 		this.id = new ObjectId()
 	}
 }
+
+export type StatusType = {
+	status: string
+}

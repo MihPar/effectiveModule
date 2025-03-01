@@ -1,6 +1,6 @@
 import { QueryTicketRepository } from "../queryRepository/queryTicketRepository";
 import { TicketRepository } from "../repositories/ticket.repository";
-import { TicketDB } from "../types/ticketType";
+import { StatusType, TicketDB } from "../types/ticketType";
 
 export class TicketService {
 	constructor(
@@ -21,5 +21,10 @@ export class TicketService {
 	async updateTicketByCancellationReason(id: string, cancellationReason: string): Promise<TicketDB> {
 		const updateTicketById = await this.ticketReposiotry.updateTicketByCancell(id, cancellationReason)
 		return updateTicketById
+	}
+
+	async cancellAllTicket(status: StatusType) {
+		const updateAllTicketByEnd = await this.ticketReposiotry.updateTicketBy(status)
+		return updateAllTicketByEnd
 	}
 }
