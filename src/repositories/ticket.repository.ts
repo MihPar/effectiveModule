@@ -7,4 +7,8 @@ export class TicketRepository {
 		const result = await TicketModel.create(newTicket)
 		return newTicket
 	}
+
+	async updateTicket(id: string, resolutionMessage: string) {
+		
+	}
 }

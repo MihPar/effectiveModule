@@ -8,4 +8,9 @@ export class QueryTicketRepository {
 		const getTickeById = await TicketModel.findOne({ _id: new ObjectId(id) }, status, updatedAt)
 		return getTickeById ? TicketDB.getTicketById(getTickeById) : undefined
 	}
+
+	async findTicketWithId(id: string): Promise<Ticket | undefined> {
+		const getTickeById = await TicketModel.findOne({ _id: new ObjectId(id) })
+		return getTickeById ? TicketDB.getTicketById(getTickeById) : undefined
+	}
 }

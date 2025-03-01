@@ -1,8 +1,8 @@
 import { Response } from "express"
-import { BodyTicketModel } from "../model/bodyTicket.model"
-import { RequesParamstWithId, RequestTicketBody, RequestWithId } from "../types/types"
+import { BodyTicketModel, TicketBodyModel, TicketResolutionMessage } from "../model/bodyTicket.model"
+import { RequestTicketBody, RequestWithParamsAndBody } from "../types/types"
 import { HTTP_STATUS } from "../utils/utils.status"
-import { Ticket, TicketDB } from "../types/ticketType"
+import { Ticket } from "../types/ticketType"
 import { TicketService } from "../servise/ticket.servise"
 import { TicketIdModel } from "../model/ticketId.model"
 import { QueryTicketRepository } from "../queryRepository/queryTicketRepository"
@@ -31,9 +31,10 @@ export class TicketController {
 	}
 	
   // Взять обращение в работу
-	async takeTicketInWork(req: RequesParamstWithId<TicketIdModel>, res: Response<Ticket | undefined>): Promise<Ticket | undefined> {
+	async takeTicketInWork(req: RequestWithParamsAndBody<TicketIdModel, TicketBodyModel>, res: Response<Ticket | undefined>): Promise<Ticket | undefined> {
 		try{
-			const {id, status, updatedAt} = req.body
+			const { id } = req.params;
+			const {status, updatedAt} = req.body
 			const findTicketById: Ticket | undefined = await this.queryTicketRepository.findTicketById(id, status, updatedAt)
 			return res.status(HTTP_STATUS.OK_200).send(findTicketById)
 		} catch(e) {
@@ -42,7 +43,16 @@ export class TicketController {
 	}
 
 	// завершение обработки обращения
-	async completeTicket() {}
+	async completeTicket(req: RequestWithParamsAndBody<TicketIdModel, TicketResolutionMessage>, res: Response<Ticket | undefined>) {
+		const { id } = req.params;
+    	const { resolutionMessage } = req.body;
+		const findTicketById = await this.queryTicketRepository.findTicketWithId(id)
+		if(!findTicketById) {
+			return res.sendStatus(HTTP_STATUS.NOT_FOUND_404)
+		} else {
+			const updateTicket = await this.
+		}
+	}
 
 	async cancelTicket() {}
 
