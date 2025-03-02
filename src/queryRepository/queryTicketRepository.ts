@@ -16,6 +16,6 @@ export class QueryTicketRepository {
 
 	async getTicket(filter: any): Promise<any | undefined> {
 		const findTicket: any = await TicketModel.find(filter)
-		return findTicket ? findTicket.getManyTicket(findTicket) : undefined
+		return findTicket ? TicketDB.getTicketById(findTicket) : undefined
 	}
 }
