@@ -15,7 +15,7 @@ export class TicketDB {
 		this._id = new ObjectId()
 	}
 
-		async getNewTicket(): Promise<Ticket> {
+		async getNewTicket(findTicket: TicketDB): Promise<Ticket> {
 			return {
 				id: this._id,
 				createdAt: this.createdAt,
@@ -24,6 +24,16 @@ export class TicketDB {
 				status: 'Новое',
 		}
 	}
+
+		async getManyTicket(findTicket: TicketDB) {
+			return {
+				id: this._id,
+				createdAt: this.createdAt,
+				title: this.title,
+				description: this.description,
+				status: 'Новое',
+		}
+		}
 		static async getTicketById(getTickeById: TicketDB): Promise<Ticket> {
 			return {
 				id: getTickeById._id,
@@ -54,3 +64,14 @@ export class Ticket {
 export type StatusType = {
 	status: string
 }
+
+export type FilterType = {
+	createdAt: {
+	  $gte: Date;
+	  $lte: Date;
+	};
+  };
+
+export type FilType = {
+	createdAt: Date
+  };

@@ -16,3 +16,20 @@ export type TicketResolutionMessage = {
 export type TicketCancellationReason = {
 	cancellationReason: string
 }
+
+export type TicketType = {
+	id: string
+	createdAt: string
+	title: string,
+	description: string,
+	status: 'Новое' | 'В работе' | 'Завершено' | 'Отменено',
+	updatedAt?: Date,
+	solution?: string,
+  	cancellationReason?: string,
+}
+
+export type QueryTicketRequest = {
+	date: Date
+	startDate: Date 
+	endDate: Date
+}

@@ -1,6 +1,6 @@
-import { Response } from "express"
-import { BodyTicketModel, TicketBodyModel, TicketCancellationReason, TicketResolutionMessage } from "../model/bodyTicket.model"
-import { RequestTicketBody, RequestWithParamsAndBody } from "../types/types"
+import { NextFunction, Request, Response } from 'express';
+import { BodyTicketModel, QueryTicketRequest, TicketBodyModel, TicketCancellationReason, TicketResolutionMessage } from "../model/bodyTicket.model"
+import { QueryRequest, RequestTicketBody, RequestWithParamsAndBody } from "../types/types"
 import { HTTP_STATUS } from "../utils/utils.status"
 import { Ticket, TicketDB } from "../types/ticketType"
 import { TicketService } from "../servise/ticket.servise"
@@ -13,56 +13,77 @@ export class TicketController {
 		protected queryTicketRepository: QueryTicketRepository
 	) {}
 
-	async getTickets() {
+	async getTickets(req: QueryRequest<QueryTicketRequest>, res: Response<Ticket>): Promise<void> {
+		try {
+			const { date, startDate, endDate } = req.query
+			let filter = {}
+			if(date) {
+				filter = { createdAt: new Date(date) }
+			} else if(startDate && endDate) {
+				filter = {
+					createdAt: {
+					  $gte: new Date(startDate),
+					  $lte: new Date(endDate)
+					}
+				  }
+			}
+			const requestTicket = await this.queryTicketRepository.getTicket(filter)
+			res.status(HTTP_STATUS.OK_200).send(requestTicket)
+			
+		} catch(e) {
+			res.sendStatus(HTTP_STATUS.BAD_REQUEST_400)
+		}
 		console.log("Hello world")
 	}
 
-	async createTicket(req: RequestTicketBody<BodyTicketModel>, res: Response<Ticket>) {
+	async createTicket(req: RequestTicketBody<BodyTicketModel>, res: Response<Ticket>)
+	: Promise<void> 
+	{
 		try {
 			const {title, description, status = "Новое"} = req.body
 			if(!title || !description) {
 				res.sendStatus(HTTP_STATUS.NOT_FOUND_404);
 			}
 			const crateNewTicket: Ticket = await this.ticketService.createNewTicket(title, description, status)
-			return res.status(HTTP_STATUS.CREATED_201).send(crateNewTicket)
+			res.status(HTTP_STATUS.CREATED_201).send(crateNewTicket)
 		} catch(e) {
-			return res.status(HTTP_STATUS.BAD_REQUEST_400)
+			res.status(HTTP_STATUS.BAD_REQUEST_400)
 		}
 	}
 	
   // Взять обращение в работу
-	async takeTicketInWork(req: RequestWithParamsAndBody<TicketIdModel, TicketBodyModel>, res: Response<Ticket | undefined>) {
+	async takeTicketInWork(req: RequestWithParamsAndBody<TicketIdModel, TicketBodyModel>, res: Response<Ticket | null>) {
 		try{
 			const { id } = req.params;
 			const {status, updatedAt} = req.body
 			const findTicketById: Ticket | undefined = await this.queryTicketRepository.findTicketById(id, status, updatedAt)
-			return res.status(HTTP_STATUS.OK_200).send(findTicketById)
+			res.status(HTTP_STATUS.OK_200).send(findTicketById)
 		} catch(e) {
-			return res.sendStatus(HTTP_STATUS.NOT_FOUND_404)
+			res.sendStatus(HTTP_STATUS.NOT_FOUND_404)
 		}
 	}
 
 	// завершение обработки обращения
-	async completeTicket(req: RequestWithParamsAndBody<TicketIdModel, TicketResolutionMessage>, res: Response<TicketDB | undefined>) {
+	async completeTicket(req: RequestWithParamsAndBody<TicketIdModel, TicketResolutionMessage>, res: Response<TicketDB | null>) {
 		const { id } = req.params;
     	const { resolutionMessage } = req.body;
 		const findTicketById = await this.queryTicketRepository.findTicketWithId(id)
 		if(!findTicketById) {
-			return res.sendStatus(HTTP_STATUS.NOT_FOUND_404)
+			res.sendStatus(HTTP_STATUS.NOT_FOUND_404)
 		} 
 		const updateTicket = await this.ticketService.updateTicket(id, resolutionMessage)
-		return res.status(HTTP_STATUS.CREATED_201).send(updateTicket)
+		res.status(HTTP_STATUS.CREATED_201).send(updateTicket)
 	}
 
-	async cancelTicket(req: RequestWithParamsAndBody<TicketIdModel, TicketCancellationReason>, res: Response<TicketDB | undefined>) {
+	async cancelTicket(req: RequestWithParamsAndBody<TicketIdModel, TicketCancellationReason>, res: Response<TicketDB | null>) {
 		const { id } = req.params;
     	const { cancellationReason } = req.body;
 		const findTicketById = await this.queryTicketRepository.findTicketWithId(id)
 		if(!findTicketById) {
-			return res.sendStatus(HTTP_STATUS.NOT_FOUND_404)
+			res.sendStatus(HTTP_STATUS.NOT_FOUND_404)
 		} 
 		const updateReq = await this.ticketService.updateTicketByCancellationReason(id, cancellationReason)
-		return res.status(HTTP_STATUS.CREATED_201).send(updateReq)
+		res.status(HTTP_STATUS.CREATED_201).send(updateReq)
 	}
 
 	async cancelAllInProgressTickets(req: Request, res: Response) {
