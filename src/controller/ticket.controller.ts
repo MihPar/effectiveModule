@@ -13,28 +13,28 @@ export class TicketController {
 		protected queryTicketRepository: QueryTicketRepository
 	) {}
 
-	async getTickets(req: QueryRequest<QueryTicketRequest>, res: Response<Ticket>): Promise<void> {
-		try {
-			const { date, startDate, endDate } = req.query
-			let filter = {}
-			if(date) {
-				filter = { createdAt: new Date(date) }
-			} else if(startDate && endDate) {
-				filter = {
-					createdAt: {
-					  $gte: new Date(startDate),
-					  $lte: new Date(endDate)
-					}
-				  }
-			}
-			const requestTicket = await this.queryTicketRepository.getTicket(filter)
-			res.status(HTTP_STATUS.OK_200).send(requestTicket)
+	// async getTickets(req: QueryRequest<QueryTicketRequest>, res: Response<Ticket>): Promise<void> {
+	// 	try {
+	// 		const { date, startDate, endDate } = req.query
+	// 		let filter = {}
+	// 		if(date) {
+	// 			filter = { createdAt: new Date(date) }
+	// 		} else if(startDate && endDate) {
+	// 			filter = {
+	// 				createdAt: {
+	// 				  $gte: new Date(startDate),
+	// 				  $lte: new Date(endDate)
+	// 				}
+	// 			  }
+	// 		}
+	// 		const requestTicket = await this.queryTicketRepository.getTicket(filter)
+	// 		res.status(HTTP_STATUS.OK_200).send(requestTicket)
 			
-		} catch(e) {
-			res.sendStatus(HTTP_STATUS.BAD_REQUEST_400)
-		}
-		console.log("Hello world")
-	}
+	// 	} catch(e) {
+	// 		res.sendStatus(HTTP_STATUS.BAD_REQUEST_400)
+	// 	}
+	// 	console.log("Hello world")
+	// }
 
 	async createTicket(req: RequestTicketBody<BodyTicketModel>, res: Response<Ticket>)
 	: Promise<void> 
